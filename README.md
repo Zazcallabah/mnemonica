@@ -1,0 +1,2 @@
+# mnemonica
+Mnemonica-trainer
