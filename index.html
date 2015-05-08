@@ -1,0 +1,189 @@
+﻿ <!DOCTYPE html>
+<html>
+<head>
+	<title>Mnemonica trainer</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=no">
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css"/>
+	<!--<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script-->
+	<script src="jquery.min.js"></script>
+	
+	<script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js"></script>
+	<script src="knockout-min.js"></script>
+	<script src="model.js"></script>
+	<style>
+	.red { color: red !important; }
+	.black { color: black !important; }
+	.displaycontainer { text-align:center; font-size: 48pt; color: grey; };
+	
+	.ui-footer a {
+			margin-left: 22px;
+			margin-right: 22px;
+		}
+
+		.ui-footer {
+			width: 100%;
+			position: absolute;
+			bottom: 0;
+			text-align:center;
+		}
+	</style>
+</head>
+<body>
+
+<div data-role="page" id="main">
+	<div data-role="header"><h1>Mnemonica</h1></div>
+	<div role="main" class="ui-content">
+		<a class="ui-btn" id="go" data-transition="none" href="#timing">Go</a>
+	</div>
+	<div data-role="footer">&nbsp;
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#setup">Setup</a>
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#stats">Stats</a>
+	</div>
+</div>
+
+<div data-role="page" id="timing">
+	<div data-role="header"><h1>Timing</h1></div>
+	<div role="main" class="ui-content">
+		<div class="displaycontainer">
+			<span data-bind="text: currentStat().query(), css: { 'red': isred(), 'black': isblack() }"></span>
+		</div>
+		<a class="ui-btn" id="ok" data-transition="none" href="#done">Ok</a>
+	</div>
+	<div data-role="footer">&nbsp;
+	</div>
+</div>
+
+<div data-role="page" id="done">
+	<div data-role="header"><h1>?</h1></div>
+	<div role="main" class="ui-content">
+		<div class="displaycontainer">
+			<span data-bind="text: currentStat().display()"></span>
+		</div>
+		<a class="ui-btn" id="hit" data-transition="none" href="#retry">Hit</a>
+		<a class="ui-btn" id="miss" data-transition="none" href="#retry">Miss</a>
+	</div>
+	<div data-role="footer">&nbsp;
+	</div>
+</div>
+
+<div data-role="page" id="retry">
+	<div data-role="header"><h1>Mnemonica</h1></div>
+	<div role="main" class="ui-content">
+		<div class="displaycontainer">
+			<span data-bind="text: currentStat().display()"></span>
+		</div>
+		<a class="ui-btn" id="go2" data-transition="none" href="#timing">Go</a>
+	</div>
+	<div data-role="footer">&nbsp;
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#setup">Setup</a>
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#stats">Stats</a>
+	</div>
+</div>
+
+<div data-role="page" id="stats">
+	<div data-role="header"><h1>Stats</h1></div>
+	<div role="main" class="ui-content">
+		<ul data-inset="true" data-role="listview" data-bind="foreach: displaystats">
+			<li class="ui-li-static ui-body-inherit">
+				<span data-bind="text: displaytext"></span>
+				<button class="ui-btn ui-btn-inline" data-bind="click: clearOne">x</button>
+			</li>
+		</ul>
+	</div>
+	<p>&nbsp;</p>
+	<div data-role="footer">&nbsp;
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#main">Back</a>
+	</div>
+</div>
+
+<div data-role="page" id="setup">
+	<div data-role="header"><h1>Random</h1></div>
+	<div role="main" class="ui-content">
+		<div class="displaycontainer">
+			<span id="rndCard"></span>
+		</div>
+		<button class="ui-btn" id="nextCard" data-transition="none">Go</button>
+	</div>
+	<div data-role="footer">&nbsp;
+		<a class="ui-btn ui-btn-inline" data-transition="none" href="#main">Back</a>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	var model = new Model();
+	var timermark = new Date().getTime();
+	var tookms = 0;
+	$("#go").click(function(){
+		timermark = new Date().getTime();
+		model.next();
+	});
+var rndStack = [];
+var redoRnd =function(){
+if(rndStack.length >0) return;
+var mlist = "♣4,♥2,♦7,♣3,♥4,♦6,♠A,♥5,♠9,♠2,♥Q,♦3,♣Q,♥8,♠6,♠5,♥9,♣K,♦2,♥J,♠3,♠8,♥6,♣10,♦5,♦K,♣2,♥3,♦8,♣5,♠K,♦J,♣8,♠10,♥K,♣J,♠7,♥10,♦A,♠4,♥7,♦4,♣A,♣9,♠J,♦Q,♣7,♠Q,♦10,♣6,♥A,♦9".split(/\s*,\s*/);
+var rndtmp=[];
+for(var i=0;i<10;i++){
+rndtmp.push(mlist[i]);
+}
+for(var i=10;i<20;i++){
+rndtmp.push(mlist[i]);
+rndtmp.push(mlist[i]);
+}
+for(var i=20;i<30;i++){
+rndtmp.push(mlist[i]);
+rndtmp.push(mlist[i]);
+rndtmp.push(mlist[i]);
+}
+for(var i=30;i<40;i++){
+rndtmp.push(mlist[i]);
+rndtmp.push(mlist[i]);
+}
+for(var i=40;i<52;i++){
+rndtmp.push(mlist[i]);
+}
+while(rndtmp.length >0)
+{
+rndStack.push(rndtmp.splice(Math.floor(Math.random()*rndtmp.length),1)[0]);
+}
+};
+	var nC=function(){
+redoRnd();
+var next =rndStack.pop();
+
+		var suits = ['♦','♥','♠','♣'];
+		
+		if( next.charAt(0) == '♥' ||  next.charAt(0)=='♦')
+			$("#rndCard").attr("class","red");
+		else
+			$("#rndCard").attr("class","black");
+
+		$("#rndCard").text(next);
+	};
+	$("#nextCard").click(nC);
+	$("#go2").click(function(){
+		timermark = new Date().getTime();
+		model.next();
+	});
+	$("#ok").click(function(){
+		tookms = new Date().getTime() - timermark;
+	});
+	$("#hit").click(function(){
+		model.currentStat().add(tookms);
+		model.save();
+		model.sortDisplay();
+	});
+	$("#miss").click(function(){
+		model.currentStat().add(15000);
+		model.save();
+		model.sortDisplay();
+	});
+	
+	nC();
+
+	ko.applyBindings(model);
+	model.sortDisplay();
+</script>
+</body>
+</html>
